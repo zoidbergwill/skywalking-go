@@ -1,0 +1,3 @@
+[submodule "collector-protocol"]
+	path = collector-protocol
+	url = https://github.com/apache/incubator-skywalking-data-collect-protocol.git
