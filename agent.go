@@ -19,7 +19,7 @@
 package skywalking
 
 import "context"
-import "skywalking-golang/propagation"
+import "skywalking-go/propagation"
 
 // In most tracing system, you will know this as tracer
 // SkyWalking's agent intends to collector Memory, CPU, process id etc.
@@ -40,28 +40,28 @@ func NewAgentWithDefaultOptions(applicationCode string, directServerList ...stri
 }
 
 // Create an entry span for incoming request, for serve side of RPC
-func (agent *Agent) CreateEntrySpan(ctx context.Context, operationName string, carrier propagation.ContextCarrier) (Span, context.Context) {
+func (a *Agent) CreateEntrySpan(ctx context.Context, operationName string, carrier propagation.ContextCarrier) (Span, context.Context) {
 	return nil, ctx;
 }
 
 // Create a local span for local span, no across process related
-func (agent *Agent) CreateLocalSpan(ctx context.Context, operationName string) (Span, context.Context) {
+func (a *Agent) CreateLocalSpan(ctx context.Context, operationName string) (Span, context.Context) {
 	return nil, ctx;
 }
 
 // Create an exit span for outgoing request, for client side of RPC
-func (agent *Agent) CreateExitSpan(ctx context.Context, operationName string) (Span, context.Context, propagation.ContextCarrier) {
+func (a *Agent) CreateExitSpan(ctx context.Context, operationName string) (Span, context.Context, propagation.ContextCarrier) {
 	return nil, ctx, nil;
 }
 
 // Inject the current status of Context into the ContextCarrier for across thread propagation
 // Inject func is a part of CreateExitSpan
-func (agent *Agent) inject(ctx context.Context) propagation.ContextCarrier {
+func (a *Agent) Inject(ctx context.Context) propagation.ContextCarrier {
 	return nil
 }
 
 // Extract the ContextCarrier's info into Context for continue the trace from client side
 // Extract fun is a part of Create CreateEntrySpan
-func (agent *Agent) extract(ctx context.Context, carrier propagation.ContextCarrier) context.Context {
+func (a *Agent) Extract(ctx context.Context, carrier propagation.ContextCarrier) context.Context {
 	return nil;
 }

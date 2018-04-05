@@ -18,8 +18,56 @@
 
 package propagation
 
+import (
+	"container/list"
+)
+
+type CarrierItem interface {
+	headKey() string
+	headValue() string
+	setValue(t string)
+	isValid() bool
+}
+
+// SW3CarrierItem is the only implementation of CarrierItem for now.
+// In roadmap, W3C trace context implementation may be added and actived by somehow.
+type SW3CarrierItem struct {
+}
+
+func (s *SW3CarrierItem) headKey() string {
+	return "sw3"
+}
+
+func (s *SW3CarrierItem) headValue() string {
+	return "";
+}
+
+func (s *SW3CarrierItem) setValue(t string) string {
+	return "";
+}
+
+func (s *SW3CarrierItem) isValid() bool {
+	return true;
+}
+
+func NewSW3CarrierItem() *SW3CarrierItem {
+	item := new(SW3CarrierItem)
+
+	return item
+}
+
 // ContextCarrier is a data carrier of tracing context,
 // it holds a snapshot for across process propagation.
-type ContextCarrier interface {
+type ContextCarrier struct {
+	items *list.List
+}
 
+func (c *ContextCarrier) GetAllItems() *list.List {
+	return c.items
+}
+
+func NewContextCarrier() (*ContextCarrier) {
+	carrier := ContextCarrier{items: list.New()};
+	carrier.items.PushBack(NewSW3CarrierItem())
+	return &carrier
 }
