@@ -18,10 +18,6 @@
 
 package propagation
 
-import (
-	"container/list"
-)
-
 type CarrierItem interface {
 	headKey() string
 	headValue() string
@@ -49,7 +45,7 @@ func (s *SW3CarrierItem) isValid() bool {
 	return true;
 }
 
-func NewSW3CarrierItem() *SW3CarrierItem {
+func NewSW3CarrierItem() CarrierItem {
 	item := new(SW3CarrierItem)
 
 	return item
@@ -58,17 +54,16 @@ func NewSW3CarrierItem() *SW3CarrierItem {
 // ContextCarrier is a data carrier of tracing context,
 // it holds a snapshot for across process propagation.
 type ContextCarrier struct {
-	items *list.List
+	items []CarrierItem
 }
 
-func(c *ContextCarrier) GetAllItems() *list.List{
+func (c *ContextCarrier) GetAllItems() []CarrierItem {
 	return c.items
 }
 
 func NewContextCarrier() (*ContextCarrier) {
-	carrier := ContextCarrier{items: list.New()};
-	carrier.items.PushBack(NewSW3CarrierItem())
+	carrier := ContextCarrier{items: []CarrierItem{
+		NewSW3CarrierItem(),
+	}};
 	return &carrier
 }
-
-
