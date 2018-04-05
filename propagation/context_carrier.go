@@ -42,8 +42,7 @@ func (s *SW3CarrierItem) headValue() string {
 	return "";
 }
 
-func (s *SW3CarrierItem) setValue(t string) string {
-	return "";
+func (s *SW3CarrierItem) setValue(t string) {
 }
 
 func (s *SW3CarrierItem) isValid() bool {
@@ -62,7 +61,7 @@ type ContextCarrier struct {
 	items *list.List
 }
 
-func (c *ContextCarrier) GetAllItems() *list.List {
+func(c *ContextCarrier) GetAllItems() *list.List{
 	return c.items
 }
 
@@ -71,3 +70,5 @@ func NewContextCarrier() (*ContextCarrier) {
 	carrier.items.PushBack(NewSW3CarrierItem())
 	return &carrier
 }
+
+
