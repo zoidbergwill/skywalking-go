@@ -18,5 +18,52 @@
 
 package skywalking
 
+import (
+	"strconv"
+	"errors"
+	"skywalking-go/trace"
+)
+
 // AgentOptions used for initialize agent
-type AgentOptions func(o *Agent) error
+type AgentOptions func(a *Agent) error
+
+func WithDirectGRPCIpPort(hostname string, port int) AgentOptions {
+	return func(a *Agent) error {
+		if hostname == "" {
+			return errors.New("hostname must not empty.")
+		} else if port == 0 || port > 65535 {
+			return errors.New("Network port should be between 0(exclude) and 65535(include).")
+		}
+		return WithDirectGRPCAddress(hostname + ":" + strconv.Itoa(port))(a)
+	}
+}
+
+func WithDirectGRPCAddress(address string) AgentOptions {
+	return func(a *Agent) error {
+		if address == "" {
+			return errors.New("address must not empty.")
+		}
+		a.directServerList = append(a.directServerList, address)
+		return nil
+	}
+}
+
+func WithApplicationCode(applicationCode string) AgentOptions {
+	return func(a *Agent) error {
+		if applicationCode == "" {
+			return errors.New("applicationCode must not empty.")
+		}
+		a.applicationCode = applicationCode
+		return nil
+	}
+}
+
+func WithChannelSize(bufferSize int) AgentOptions {
+	return func(a *Agent) error {
+		if (bufferSize < 1) {
+			return errors.New("BufferSize must be positive int.")
+		}
+		a.queue = make(chan trace.TraceSegment, bufferSize)
+		return nil
+	}
+}

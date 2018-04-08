@@ -18,19 +18,36 @@
 
 package skywalking
 
-import "context"
-import "skywalking-go/propagation"
+import (
+	"context"
+	"skywalking-go/propagation"
+	"skywalking-go/trace"
+)
 
 // In most tracing system, you will know this as tracer
 // SkyWalking's agent intends to collector Memory, CPU, process id etc.
 // so it is not just a simple tracer.
 // Initialize agent by using NewAgent method.
 type Agent struct {
+	directServerList []string
+	applicationCode  string
+	queue            chan trace.TraceSegment
 }
 
 // Initialize agent with given options
 func NewAgent(opts ...AgentOptions) (*Agent, error) {
-	return nil, nil
+	agent := &Agent{
+		directServerList: []string{},
+		applicationCode:  "",
+	}
+
+	for _, opt := range opts {
+		if err := opt(agent); err != nil {
+			return nil, err
+		}
+	}
+
+	return agent, nil
 }
 
 // Initialize agent with necessary arguments only
@@ -50,14 +67,16 @@ func (a *Agent) CreateLocalSpan(ctx context.Context, operationName string) (Span
 }
 
 // Create an exit span for outgoing request, for client side of RPC
-func (a *Agent) CreateExitSpan(ctx context.Context, operationName string) (Span, context.Context, propagation.ContextCarrier) {
-	return nil, ctx, nil;
+func (a *Agent) CreateExitSpan(ctx context.Context, operationName string) (Span, context.Context, *propagation.ContextCarrier) {
+	carrier := propagation.NewContextCarrier()
+	return nil, ctx, carrier;
 }
 
 // Inject the current status of Context into the ContextCarrier for across thread propagation
 // Inject func is a part of CreateExitSpan
-func (a *Agent) Inject(ctx context.Context) propagation.ContextCarrier {
-	return nil
+func (a *Agent) Inject(ctx context.Context) *propagation.ContextCarrier {
+	carrier := propagation.NewContextCarrier()
+	return carrier
 }
 
 // Extract the ContextCarrier's info into Context for continue the trace from client side
