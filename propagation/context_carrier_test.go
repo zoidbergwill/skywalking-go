@@ -23,8 +23,7 @@ import "testing"
 func TestContextCarrier_GetAllItems(t *testing.T) {
 	items := NewContextCarrier().GetAllItems()
 
-	if(items[0].headKey() != "sw3") {
+	if items[0].headKey() != "sw3" {
 		t.Error("The context carrier item is allowed to includes sw3 header only")
 	}
 }
-
