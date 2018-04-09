@@ -19,9 +19,10 @@
 package skywalking
 
 import (
-	"strconv"
 	"errors"
-	"skywalking-go/trace"
+	"strconv"
+
+	"github.com/OpenSkywalking/skywalking-go/trace"
 )
 
 // AgentOptions used for initialize agent
@@ -60,7 +61,7 @@ func WithApplicationCode(applicationCode string) AgentOptions {
 
 func WithChannelSize(bufferSize int) AgentOptions {
 	return func(a *Agent) error {
-		if (bufferSize < 1) {
+		if bufferSize < 1 {
 			return errors.New("BufferSize must be positive int.")
 		}
 		a.queue = make(chan trace.TraceSegment, bufferSize)

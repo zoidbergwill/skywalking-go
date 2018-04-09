@@ -20,8 +20,9 @@ package skywalking
 
 import (
 	"context"
-	"skywalking-go/propagation"
-	"skywalking-go/trace"
+
+	"github.com/OpenSkywalking/skywalking-go/propagation"
+	"github.com/OpenSkywalking/skywalking-go/trace"
 )
 
 // In most tracing system, you will know this as tracer
@@ -58,18 +59,18 @@ func NewAgentWithDefaultOptions(applicationCode string, directServerList ...stri
 
 // Create an entry span for incoming request, for serve side of RPC
 func (a *Agent) CreateEntrySpan(ctx context.Context, operationName string, carrier propagation.ContextCarrier) (Span, context.Context) {
-	return nil, ctx;
+	return nil, ctx
 }
 
 // Create a local span for local span, no across process related
 func (a *Agent) CreateLocalSpan(ctx context.Context, operationName string) (Span, context.Context) {
-	return nil, ctx;
+	return nil, ctx
 }
 
 // Create an exit span for outgoing request, for client side of RPC
 func (a *Agent) CreateExitSpan(ctx context.Context, operationName string) (Span, context.Context, *propagation.ContextCarrier) {
 	carrier := propagation.NewContextCarrier()
-	return nil, ctx, carrier;
+	return nil, ctx, carrier
 }
 
 // Inject the current status of Context into the ContextCarrier for across thread propagation
@@ -82,5 +83,5 @@ func (a *Agent) Inject(ctx context.Context) *propagation.ContextCarrier {
 // Extract the ContextCarrier's info into Context for continue the trace from client side
 // Extract fun is a part of Create CreateEntrySpan
 func (a *Agent) Extract(ctx context.Context, carrier propagation.ContextCarrier) context.Context {
-	return nil;
+	return nil
 }

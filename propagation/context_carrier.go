@@ -35,14 +35,14 @@ func (s *SW3CarrierItem) headKey() string {
 }
 
 func (s *SW3CarrierItem) headValue() string {
-	return "";
+	return ""
 }
 
 func (s *SW3CarrierItem) setValue(t string) {
 }
 
 func (s *SW3CarrierItem) isValid() bool {
-	return true;
+	return true
 }
 
 func NewSW3CarrierItem() CarrierItem {
@@ -61,9 +61,9 @@ func (c *ContextCarrier) GetAllItems() []CarrierItem {
 	return c.items
 }
 
-func NewContextCarrier() (*ContextCarrier) {
+func NewContextCarrier() *ContextCarrier {
 	carrier := ContextCarrier{items: []CarrierItem{
 		NewSW3CarrierItem(),
-	}};
+	}}
 	return &carrier
 }

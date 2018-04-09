@@ -9,10 +9,8 @@ go:
 
 install:
   - go get -d -t ./...
-  - go get -u github.com/golang/lint/...
 
 script:
   - go test
   - go vet
-  - go lint
-  
+

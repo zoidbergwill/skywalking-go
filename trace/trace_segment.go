@@ -19,5 +19,4 @@
 package trace
 
 type TraceSegment struct {
-
 }
