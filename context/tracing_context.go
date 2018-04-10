@@ -21,7 +21,6 @@
 package context
 
 import (
-	"context"
 	"github.com/OpenSkywalking/skywalking-go/trace"
 	"github.com/OpenSkywalking/skywalking-go/propagation"
 )
@@ -30,25 +29,32 @@ type TracingContext struct {
 }
 
 // Create an entry span for incoming request, for serve side of RPC
-func (t *TracingContext) CreateEntrySpan(ctx context.Context, operationName string, carrier *propagation.ContextCarrier) (trace.Span, context.Context) {
-	return nil, ctx
+func (t *TracingContext) CreateEntrySpan(swContext SWContext, operationName string) trace.Span {
+	return nil
 }
 
 // Create a local span for local span, no across process related
-func (t *TracingContext) CreateLocalSpan(ctx context.Context, operationName string) (trace.Span, context.Context) {
-	return nil, ctx
+func (t *TracingContext) CreateLocalSpan(swContext SWContext, operationName string) trace.Span {
+	return nil
 }
 
 // Create an exit span for outgoing request, for client side of RPC
-func (t *TracingContext) CreateExitSpan(ctx context.Context, operationName string) (trace.Span, context.Context, *propagation.ContextCarrier) {
+func (t *TracingContext) CreateExitSpan(swContext SWContext, operationName string) (trace.Span, *propagation.ContextCarrier) {
 	carrier := propagation.NewContextCarrier()
-	return nil, ctx, carrier
+	return nil, carrier
+}
+
+func (t *TracingContext) Extract(swContext SWContext, carrier *propagation.ContextCarrier) {
+}
+
+func (t *TracingContext) Inject(swContext SWContext) *propagation.ContextCarrier {
+	return nil
 }
 
 type TracingContextCreator struct {
 }
 
 func (*TracingContextCreator) Create() SWContext {
-	ctx := &TracingContext{}
-	return ctx
+	tracingContext := &TracingContext{}
+	return tracingContext
 }

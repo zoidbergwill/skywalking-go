@@ -59,36 +59,43 @@ func NewAgentWithDefaultOptions(applicationCode string, directServerList ...stri
 	return NewAgent(
 		WithApplicationCode(applicationCode),
 		WithGRPCReporter(directServerList...),
+		WithTracingContext(),
 	)
 }
 
 // Create an entry span for incoming request, for serve side of RPC
-func (a *Agent) CreateEntrySpan(ctx context.Context, operationName string, carrier *propagation.ContextCarrier) (trace.Span, context.Context) {
+func (a *Agent) CreateEntrySpan(ctx context.Context, operationName string, carrier *propagation.ContextCarrier) (context.Context, trace.Span) {
 	ctx, swContext := traceContext.GetOrCreateContext(ctx, a.contextCreator)
-	swContext.CreateEntrySpan(ctx, operationName, carrier)
-	return nil, ctx
+	span := swContext.CreateEntrySpan(swContext, operationName)
+	swContext.Extract(swContext, carrier)
+	return ctx, span
 }
 
 // Create a local span for local span, no across process related
-func (a *Agent) CreateLocalSpan(ctx context.Context, operationName string) (trace.Span, context.Context) {
-	return nil, ctx
+func (a *Agent) CreateLocalSpan(ctx context.Context, operationName string) (context.Context, trace.Span) {
+	ctx, swContext := traceContext.GetOrCreateContext(ctx, a.contextCreator)
+	span := swContext.CreateLocalSpan(swContext, operationName)
+	return ctx, span
 }
 
 // Create an exit span for outgoing request, for client side of RPC
-func (a *Agent) CreateExitSpan(ctx context.Context, operationName string) (trace.Span, context.Context, *propagation.ContextCarrier) {
-	carrier := propagation.NewContextCarrier()
-	return nil, ctx, carrier
+func (a *Agent) CreateExitSpan(ctx context.Context, operationName string) (context.Context, trace.Span, *propagation.ContextCarrier) {
+	ctx, swContext := traceContext.GetOrCreateContext(ctx, a.contextCreator)
+	span, carrier := swContext.CreateExitSpan(swContext, operationName)
+	return ctx, span, carrier
 }
 
 // Inject the current status of SWContext into the ContextCarrier for across thread propagation
 // Inject func is a part of CreateExitSpan
-func (a *Agent) Inject(ctx context.Context) *propagation.ContextCarrier {
-	carrier := propagation.NewContextCarrier()
-	return carrier
+func (a *Agent) Inject(ctx context.Context) (context.Context, *propagation.ContextCarrier) {
+	ctx, swContext := traceContext.GetOrCreateContext(ctx, a.contextCreator)
+	return ctx, swContext.Inject(swContext)
 }
 
 // Extract the ContextCarrier's info into SWContext for continue the trace from client side
 // Extract fun is a part of Create CreateEntrySpan
-func (a *Agent) Extract(ctx context.Context, carrier propagation.ContextCarrier) context.Context {
-	return nil
+func (a *Agent) Extract(ctx context.Context, carrier *propagation.ContextCarrier) context.Context {
+	ctx, swContext := traceContext.GetOrCreateContext(ctx, a.contextCreator)
+	swContext.Extract(swContext, carrier)
+	return ctx
 }

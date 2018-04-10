@@ -22,6 +22,7 @@ import (
 	"errors"
 	"github.com/OpenSkywalking/skywalking-go/trace"
 	"github.com/OpenSkywalking/skywalking-go/reporter/grpc"
+	"github.com/OpenSkywalking/skywalking-go/context"
 )
 
 // AgentOptions used for initialize agent
@@ -43,6 +44,13 @@ func WithChannelSize(bufferSize int) AgentOptions {
 			return errors.New("BufferSize must be positive int.")
 		}
 		a.queue = make(chan trace.TraceSegment, bufferSize)
+		return nil
+	}
+}
+
+func WithTracingContext() AgentOptions {
+	return func(a *Agent) error {
+		a.contextCreator = new(context.TracingContextCreator)
 		return nil
 	}
 }

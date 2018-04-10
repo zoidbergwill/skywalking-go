@@ -34,9 +34,11 @@ var ContextKeyHolder = ctxKey{}
 var ParentSpanKey = parentSpan{}
 
 type SWContext interface {
-	CreateEntrySpan(ctx context.Context, operationName string, carrier *propagation.ContextCarrier) (trace.Span, context.Context)
-	CreateLocalSpan(ctx context.Context, operationName string) (trace.Span, context.Context)
-	CreateExitSpan(ctx context.Context, operationName string) (trace.Span, context.Context, *propagation.ContextCarrier)
+	CreateEntrySpan(swContext SWContext, operationName string) trace.Span
+	CreateLocalSpan(swContext SWContext, operationName string) trace.Span
+	CreateExitSpan(swContext SWContext, operationName string) (trace.Span, *propagation.ContextCarrier)
+	Extract(swContext SWContext, carrier *propagation.ContextCarrier)
+	Inject(swContext SWContext) *propagation.ContextCarrier
 }
 
 // Create or get the existed SkyWalking context from go context.
