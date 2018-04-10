@@ -48,7 +48,9 @@ func WithChannelSize(bufferSize int) AgentOptions {
 }
 
 func WithGRPCReporter(servers ...string) AgentOptions {
-	return func(a *Agent) error{
-		a.reporter = reporter.NewGrpcReporter(servers)
+	return func(a *Agent) error {
+		var err error
+		a.reporter, err = reporter.NewGrpcReporter(servers...)
+		return err
 	}
 }

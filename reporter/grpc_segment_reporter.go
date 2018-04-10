@@ -24,10 +24,10 @@ type GrpcReporter struct {
 	directServerList []string
 }
 
-func NewGrpcReporter(servers ...string) *GrpcReporter {
+func NewGrpcReporter(servers ...string) (*GrpcReporter, error) {
 	return &GrpcReporter{
 		servers,
-	}
+	}, nil
 }
 
 func(*GrpcReporter) Start(chan trace.TraceSegment) {

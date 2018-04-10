@@ -31,15 +31,15 @@ import (
 // so it is not just a simple tracer.
 // Initialize agent by using NewAgent method.
 type Agent struct {
-	applicationCode  string
-	queue            chan trace.TraceSegment
-	reporter         reporter.SegmentListener
+	applicationCode string
+	queue           chan trace.TraceSegment
+	reporter        reporter.SegmentListener
 }
 
 // Initialize agent with given options
 func NewAgent(opts ...AgentOptions) (*Agent, error) {
 	agent := &Agent{
-		applicationCode:  "",
+		applicationCode: "",
 	}
 
 	for _, opt := range opts {
@@ -54,13 +54,10 @@ func NewAgent(opts ...AgentOptions) (*Agent, error) {
 // Initialize agent with necessary arguments only
 // for easier usage.
 func NewAgentWithDefaultOptions(applicationCode string, directServerList ...string) (*Agent, error) {
-	opts := make([]AgentOptions, 5)
-	for _, address := range directServerList {
-		opts = append(opts, WithDirectGRPCAddress(address));
-	}
-	opts = append(opts, WithApplicationCode(applicationCode))
-
-	return NewAgent(opts...)
+	return NewAgent(
+		WithApplicationCode(applicationCode),
+		WithGRPCReporter(directServerList...),
+	)
 }
 
 // Create an entry span for incoming request, for serve side of RPC
