@@ -16,7 +16,7 @@
  *
  */
 
-package reporter
+package grpc
 
 import "github.com/OpenSkywalking/skywalking-go/trace"
 

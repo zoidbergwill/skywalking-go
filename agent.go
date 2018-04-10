@@ -24,6 +24,7 @@ import (
 	"github.com/OpenSkywalking/skywalking-go/propagation"
 	"github.com/OpenSkywalking/skywalking-go/trace"
 	"github.com/OpenSkywalking/skywalking-go/reporter"
+	traceContext "github.com/OpenSkywalking/skywalking-go/context"
 )
 
 // In most tracing system, you will know this as tracer
@@ -32,6 +33,7 @@ import (
 // Initialize agent by using NewAgent method.
 type Agent struct {
 	applicationCode string
+	contextCreator  traceContext.ContextCreator
 	queue           chan trace.TraceSegment
 	reporter        reporter.SegmentListener
 }
@@ -61,29 +63,31 @@ func NewAgentWithDefaultOptions(applicationCode string, directServerList ...stri
 }
 
 // Create an entry span for incoming request, for serve side of RPC
-func (a *Agent) CreateEntrySpan(ctx context.Context, operationName string, carrier propagation.ContextCarrier) (Span, context.Context) {
+func (a *Agent) CreateEntrySpan(ctx context.Context, operationName string, carrier *propagation.ContextCarrier) (trace.Span, context.Context) {
+	ctx, swContext := traceContext.GetOrCreateContext(ctx, a.contextCreator)
+	swContext.CreateEntrySpan(ctx, operationName, carrier)
 	return nil, ctx
 }
 
 // Create a local span for local span, no across process related
-func (a *Agent) CreateLocalSpan(ctx context.Context, operationName string) (Span, context.Context) {
+func (a *Agent) CreateLocalSpan(ctx context.Context, operationName string) (trace.Span, context.Context) {
 	return nil, ctx
 }
 
 // Create an exit span for outgoing request, for client side of RPC
-func (a *Agent) CreateExitSpan(ctx context.Context, operationName string) (Span, context.Context, *propagation.ContextCarrier) {
+func (a *Agent) CreateExitSpan(ctx context.Context, operationName string) (trace.Span, context.Context, *propagation.ContextCarrier) {
 	carrier := propagation.NewContextCarrier()
 	return nil, ctx, carrier
 }
 
-// Inject the current status of Context into the ContextCarrier for across thread propagation
+// Inject the current status of SWContext into the ContextCarrier for across thread propagation
 // Inject func is a part of CreateExitSpan
 func (a *Agent) Inject(ctx context.Context) *propagation.ContextCarrier {
 	carrier := propagation.NewContextCarrier()
 	return carrier
 }
 
-// Extract the ContextCarrier's info into Context for continue the trace from client side
+// Extract the ContextCarrier's info into SWContext for continue the trace from client side
 // Extract fun is a part of Create CreateEntrySpan
 func (a *Agent) Extract(ctx context.Context, carrier propagation.ContextCarrier) context.Context {
 	return nil

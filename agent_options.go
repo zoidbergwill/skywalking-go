@@ -21,7 +21,7 @@ package skywalking
 import (
 	"errors"
 	"github.com/OpenSkywalking/skywalking-go/trace"
-	"github.com/OpenSkywalking/skywalking-go/reporter"
+	"github.com/OpenSkywalking/skywalking-go/reporter/grpc"
 )
 
 // AgentOptions used for initialize agent
@@ -50,7 +50,7 @@ func WithChannelSize(bufferSize int) AgentOptions {
 func WithGRPCReporter(servers ...string) AgentOptions {
 	return func(a *Agent) error {
 		var err error
-		a.reporter, err = reporter.NewGrpcReporter(servers...)
+		a.reporter, err = grpc.NewGrpcReporter(servers...)
 		return err
 	}
 }
