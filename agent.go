@@ -31,7 +31,6 @@ import (
 // so it is not just a simple tracer.
 // Initialize agent by using NewAgent method.
 type Agent struct {
-	directServerList []string
 	applicationCode  string
 	queue            chan trace.TraceSegment
 	reporter         reporter.SegmentListener
@@ -40,7 +39,6 @@ type Agent struct {
 // Initialize agent with given options
 func NewAgent(opts ...AgentOptions) (*Agent, error) {
 	agent := &Agent{
-		directServerList: []string{},
 		applicationCode:  "",
 	}
 

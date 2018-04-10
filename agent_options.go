@@ -20,34 +20,12 @@ package skywalking
 
 import (
 	"errors"
-	"strconv"
-
 	"github.com/OpenSkywalking/skywalking-go/trace"
+	"github.com/OpenSkywalking/skywalking-go/reporter"
 )
 
 // AgentOptions used for initialize agent
 type AgentOptions func(a *Agent) error
-
-func WithDirectGRPCIpPort(hostname string, port int) AgentOptions {
-	return func(a *Agent) error {
-		if hostname == "" {
-			return errors.New("hostname must not empty.")
-		} else if port == 0 || port > 65535 {
-			return errors.New("Network port should be between 0(exclude) and 65535(include).")
-		}
-		return WithDirectGRPCAddress(hostname + ":" + strconv.Itoa(port))(a)
-	}
-}
-
-func WithDirectGRPCAddress(address string) AgentOptions {
-	return func(a *Agent) error {
-		if address == "" {
-			return errors.New("address must not empty.")
-		}
-		a.directServerList = append(a.directServerList, address)
-		return nil
-	}
-}
 
 func WithApplicationCode(applicationCode string) AgentOptions {
 	return func(a *Agent) error {
@@ -66,5 +44,11 @@ func WithChannelSize(bufferSize int) AgentOptions {
 		}
 		a.queue = make(chan trace.TraceSegment, bufferSize)
 		return nil
+	}
+}
+
+func WithGRPCReporter(servers ...string) AgentOptions {
+	return func(a *Agent) error{
+		a.reporter = reporter.NewGrpcReporter(servers)
 	}
 }

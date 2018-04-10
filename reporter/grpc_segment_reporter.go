@@ -16,7 +16,20 @@
  *
  */
 
-package trace
+package reporter
 
-type TraceSegment struct {
+import "github.com/OpenSkywalking/skywalking-go/trace"
+
+type GrpcReporter struct {
+	directServerList []string
+}
+
+func NewGrpcReporter(servers ...string) *GrpcReporter {
+	return &GrpcReporter{
+		servers,
+	}
+}
+
+func(*GrpcReporter) Start(chan trace.TraceSegment) {
+
 }
