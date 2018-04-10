@@ -19,10 +19,10 @@
 package propagation
 
 type CarrierItem interface {
-	headKey() string
-	headValue() string
-	setValue(t string)
-	isValid() bool
+	HeadKey() string
+	HeadValue() string
+	SetValue(t string)
+	IsValid() bool
 }
 
 // SW3CarrierItem is the only implementation of CarrierItem for now.
@@ -30,18 +30,18 @@ type CarrierItem interface {
 type SW3CarrierItem struct {
 }
 
-func (s *SW3CarrierItem) headKey() string {
+func (s *SW3CarrierItem) HeadKey() string {
 	return "sw3"
 }
 
-func (s *SW3CarrierItem) headValue() string {
+func (s *SW3CarrierItem) HeadValue() string {
 	return ""
 }
 
-func (s *SW3CarrierItem) setValue(t string) {
+func (s *SW3CarrierItem) SetValue(t string) {
 }
 
-func (s *SW3CarrierItem) isValid() bool {
+func (s *SW3CarrierItem) IsValid() bool {
 	return true
 }
 

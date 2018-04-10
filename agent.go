@@ -23,6 +23,7 @@ import (
 
 	"github.com/OpenSkywalking/skywalking-go/propagation"
 	"github.com/OpenSkywalking/skywalking-go/trace"
+	"github.com/OpenSkywalking/skywalking-go/reporter"
 )
 
 // In most tracing system, you will know this as tracer
@@ -33,6 +34,7 @@ type Agent struct {
 	directServerList []string
 	applicationCode  string
 	queue            chan trace.TraceSegment
+	reporter         reporter.SegmentListener
 }
 
 // Initialize agent with given options
@@ -54,7 +56,13 @@ func NewAgent(opts ...AgentOptions) (*Agent, error) {
 // Initialize agent with necessary arguments only
 // for easier usage.
 func NewAgentWithDefaultOptions(applicationCode string, directServerList ...string) (*Agent, error) {
-	return nil, nil
+	opts := make([]AgentOptions, 5)
+	for _, address := range directServerList {
+		opts = append(opts, WithDirectGRPCAddress(address));
+	}
+	opts = append(opts, WithApplicationCode(applicationCode))
+
+	return NewAgent(opts...)
 }
 
 // Create an entry span for incoming request, for serve side of RPC

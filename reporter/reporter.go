@@ -16,8 +16,10 @@
  *
  */
 
-package trace
+package reporter
 
-type TraceSegment struct {
+import "github.com/OpenSkywalking/skywalking-go/trace"
 
+type SegmentListener interface {
+	Start(chan trace.TraceSegment)
 }
