@@ -18,10 +18,10 @@
  *
  */
 
-package trace
+package context
 
-// Abstract Span interface defines all methods for its implementations
-// Such as NoopSpan, EntrySpan, ExitSpan, LocalSpan
-type Span interface {
-	End()
+import "time"
+
+func GetMillis() int64 {
+	return time.Now().UnixNano() / 1000000
 }

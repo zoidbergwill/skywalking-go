@@ -23,32 +23,39 @@ package context
 import (
 	"github.com/OpenSkywalking/skywalking-go/trace"
 	"github.com/OpenSkywalking/skywalking-go/propagation"
+	"container/list"
 )
 
 type TracingContext struct {
+	finishedSpans list.List
 }
 
 // Create an entry span for incoming request, for serve side of RPC
-func (t *TracingContext) CreateEntrySpan(swContext SWContext, operationName string) trace.Span {
-	return nil
+func (t *TracingContext) CreateEntrySpan(parentSpan trace.Span, operationName string) trace.Span {
+	span := newTracingSpan(t, operationName)
+	span.AsEntry()
+	return span
 }
 
 // Create a local span for local span, no across process related
-func (t *TracingContext) CreateLocalSpan(swContext SWContext, operationName string) trace.Span {
-	return nil
+func (t *TracingContext) CreateLocalSpan(parentSpan trace.Span, operationName string) trace.Span {
+	span := newTracingSpan(t, operationName)
+	return span
 }
 
 // Create an exit span for outgoing request, for client side of RPC
-func (t *TracingContext) CreateExitSpan(swContext SWContext, operationName string, remotePeer string) (trace.Span, *propagation.ContextCarrier) {
+func (t *TracingContext) CreateExitSpan(parentSpan trace.Span, operationName string, remotePeer string) trace.Span {
+	span := newTracingSpan(t, operationName)
+	span.AsExit()
+	return span
+}
+
+func (t *TracingContext) Extract(carrier *propagation.ContextCarrier) {
+}
+
+func (t *TracingContext) Inject() *propagation.ContextCarrier {
 	carrier := propagation.NewContextCarrier()
-	return nil, carrier
-}
-
-func (t *TracingContext) Extract(swContext SWContext, carrier *propagation.ContextCarrier) {
-}
-
-func (t *TracingContext) Inject(swContext SWContext) *propagation.ContextCarrier {
-	return nil
+	return carrier
 }
 
 type TracingContextCreator struct {
@@ -57,4 +64,45 @@ type TracingContextCreator struct {
 func (*TracingContextCreator) Create() SWContext {
 	tracingContext := &TracingContext{}
 	return tracingContext
+}
+
+//////////////////////////////////////////////////////
+// Implementor of Span in Tracing Context
+//////////////////////////////////////////////////////
+type TracingSpan struct {
+	spanData *TracingSpanCoreData
+	owner    *TracingContext
+}
+
+func (s *TracingSpan) End() {
+	s.spanData.endTime = GetMillis()
+}
+
+func (s *TracingSpan) AsEntry() {
+	s.spanData.isEntry = true
+}
+
+func (s *TracingSpan) AsExit() {
+	s.spanData.isExit = true;
+}
+
+func newTracingSpan(contextOwner *TracingContext, operationName string) *TracingSpan {
+	coreData := &TracingSpanCoreData{}
+	span := &TracingSpan{
+		spanData: coreData,
+		owner:    contextOwner,
+	}
+	span.spanData.operationName = operationName
+	return span;
+}
+
+type TracingSpanCoreData struct {
+	spanId        int
+	parentSpanId  int
+	operationName string
+	startTime     int64
+	endTime       int64
+	isEntry       bool
+	isExit        bool
+	layer         int8
 }

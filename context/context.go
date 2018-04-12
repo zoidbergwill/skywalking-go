@@ -34,32 +34,32 @@ var ContextKeyHolder = ctxKey{}
 var ParentSpanKey = parentSpan{}
 
 type SWContext interface {
-	CreateEntrySpan(swContext SWContext, operationName string) trace.Span
-	CreateLocalSpan(swContext SWContext, operationName string) trace.Span
-	CreateExitSpan(swContext SWContext, operationName string, remotePeer string) (trace.Span, *propagation.ContextCarrier)
-	Extract(swContext SWContext, carrier *propagation.ContextCarrier)
-	Inject(swContext SWContext) *propagation.ContextCarrier
+	CreateEntrySpan(parentSpan trace.Span, operationName string) trace.Span
+	CreateLocalSpan(parentSpan trace.Span, operationName string) trace.Span
+	CreateExitSpan(parentSpan trace.Span, operationName string, remotePeer string) trace.Span
+	Extract(carrier *propagation.ContextCarrier)
+	Inject() *propagation.ContextCarrier
 }
 
 // Create or get the existed SkyWalking context from go context.
-func GetOrCreateContext(ctx context.Context, creator ContextCreator) (context.Context, SWContext) {
+func GetOrCreateContext(ctx context.Context, creator ContextCreator) (context.Context, SWContext, trace.Span) {
 	if swCtx, ok := ctx.Value(ContextKeyHolder).(SWContext); ok {
-		return ctx, swCtx
+		return ctx, swCtx, getParentSpan(ctx)
 	} else {
 		newContext, _ := createNewContext(ctx, creator)
-		return newContext, swCtx;
+		return newContext, swCtx, nil;
 	}
 }
 
-func prepareNextContext(ctx context.Context, parentSpan trace.Span) (context.Context, error) {
+func PrepareNextContext(ctx context.Context, currentSpan trace.Span) (context.Context, error) {
 	if _, ok := ctx.Value(ctxKey{}).(SWContext); ok {
-		return context.WithValue(ctx, ParentSpanKey, parentSpan), nil
+		return context.WithValue(ctx, ParentSpanKey, currentSpan), nil
 	} else {
 		return ctx, errors.New("prepareNextContext can only be called inside an existed context")
 	}
 }
 
-func getParenSpan(ctx context.Context) trace.Span {
+func getParentSpan(ctx context.Context) trace.Span {
 	if span, ok := ctx.Value(ParentSpanKey).(trace.Span); ok {
 		return span
 	} else {
