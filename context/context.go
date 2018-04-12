@@ -36,7 +36,7 @@ var ParentSpanKey = parentSpan{}
 type SWContext interface {
 	CreateEntrySpan(swContext SWContext, operationName string) trace.Span
 	CreateLocalSpan(swContext SWContext, operationName string) trace.Span
-	CreateExitSpan(swContext SWContext, operationName string) (trace.Span, *propagation.ContextCarrier)
+	CreateExitSpan(swContext SWContext, operationName string, remotePeer string) (trace.Span, *propagation.ContextCarrier)
 	Extract(swContext SWContext, carrier *propagation.ContextCarrier)
 	Inject(swContext SWContext) *propagation.ContextCarrier
 }

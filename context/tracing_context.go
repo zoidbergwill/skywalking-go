@@ -39,7 +39,7 @@ func (t *TracingContext) CreateLocalSpan(swContext SWContext, operationName stri
 }
 
 // Create an exit span for outgoing request, for client side of RPC
-func (t *TracingContext) CreateExitSpan(swContext SWContext, operationName string) (trace.Span, *propagation.ContextCarrier) {
+func (t *TracingContext) CreateExitSpan(swContext SWContext, operationName string, remotePeer string) (trace.Span, *propagation.ContextCarrier) {
 	carrier := propagation.NewContextCarrier()
 	return nil, carrier
 }
