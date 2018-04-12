@@ -23,11 +23,10 @@ package context
 import (
 	"github.com/OpenSkywalking/skywalking-go/trace"
 	"github.com/OpenSkywalking/skywalking-go/propagation"
-	"container/list"
 )
 
 type TracingContext struct {
-	finishedSpans list.List
+	segmentOwner *trace.TraceSegment
 }
 
 // Create an entry span for incoming request, for serve side of RPC
@@ -48,6 +47,10 @@ func (t *TracingContext) CreateExitSpan(parentSpan trace.Span, operationName str
 	span := newTracingSpan(t, operationName)
 	span.AsExit()
 	return span
+}
+
+func (t *TracingContext) archive(finishedSpan *TracingSpan) {
+
 }
 
 func (t *TracingContext) Extract(carrier *propagation.ContextCarrier) {

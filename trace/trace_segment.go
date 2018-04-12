@@ -18,6 +18,15 @@
 
 package trace
 
-type TraceSegment struct {
+import (
+	"container/list"
+	"src/github.com/OpenSkywalking/skywalking-go/trace"
+)
 
+type TraceSegment struct {
+	finishedSpans list.List
+}
+
+func (t *TraceSegment) addFinished(span trace.Span) {
+	t.finishedSpans.PushBack(span);
 }
