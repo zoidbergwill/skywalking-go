@@ -81,7 +81,7 @@ func (a *Agent) CreateLocalSpan(ctx context.Context, operationName string) (cont
 // Create an exit span for outgoing request, for client side of RPC
 func (a *Agent) CreateExitSpan(ctx context.Context, operationName string, remotePeer string) (context.Context, trace.Span, *propagation.ContextCarrier) {
 	ctx, swContext := traceContext.GetOrCreateContext(ctx, a.contextCreator)
-	span, carrier := swContext.CreateExitSpan(swContext, operationName)
+	span, carrier := swContext.CreateExitSpan(swContext, operationName, remotePeer)
 	return ctx, span, carrier
 }
 
